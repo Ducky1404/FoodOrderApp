@@ -5,56 +5,103 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SearchView
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.foodorderapp.R
+import com.example.foodorderapp.adapter.MenuAdapter
+import com.example.foodorderapp.databinding.FragmentSearchBinding
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [SearchFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class SearchFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
+     private lateinit var binding: FragmentSearchBinding
+     private lateinit var adapter : MenuAdapter
+     private val originalMenuFoodName = listOf(
+        "Burger", "Pizza", "Pasta", "Sandwich", "Pizza", "Pasta", "Pizza", "Pasta", "Sandwich", "Pizza", "Pasta"
+         )
+    private val originalMenuItemPrice = listOf(
+        "50.000VND", "60.000VND", "30.000VND", "40.000VND", "50.000VND", "60.000VND", "60.000VND", "30.000VND", "40.000VND", "50.000VND", "60.000VND"
+    )
+    private val originalMenuImage = listOf(
+        R.drawable.menu1,
+        R.drawable.menu2,
+        R.drawable.menu3,
+        R.drawable.menu4,
+        R.drawable.menu5,
+        R.drawable.menu6,
+        R.drawable.menu2,
+        R.drawable.menu3,
+        R.drawable.menu4,
+        R.drawable.menu5,
+        R.drawable.menu6,
+    )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+
     }
+    private val fillerMenuFoodName = mutableListOf<String>()
+    private val fillerMenuItemPrice = mutableListOf<String>()
+    private val fillerMenuImage = mutableListOf<Int>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_search, container, false)
+        binding = FragmentSearchBinding.inflate(inflater, container, false)
+//        adapter = MenuAdapter(fillerMenuFoodName, fillerMenuItemPrice, fillerMenuImage,requireContext())
+        binding.searchRecycleView.layoutManager = LinearLayoutManager(requireContext())
+        binding.searchRecycleView.adapter = adapter
+
+        //setup for search view
+        setupSeachView()
+
+        //show All menu Items
+        showAllMenuItems()
+        return binding.root
+    }
+
+    private fun showAllMenuItems() {
+        fillerMenuFoodName.clear()
+        fillerMenuItemPrice.clear()
+        fillerMenuImage.clear()
+
+        fillerMenuFoodName.addAll(originalMenuFoodName)
+        fillerMenuItemPrice.addAll(originalMenuItemPrice)
+        fillerMenuImage.addAll(originalMenuImage)
+
+        adapter.notifyDataSetChanged()
+    }
+
+    private fun setupSeachView() {
+    binding.searchView.setOnQueryTextListener(/* listener = */ object :SearchView.OnQueryTextListener{
+        override fun onQueryTextSubmit(query: String): Boolean {
+            fillerMenuItems(query)
+            return true
+        }
+
+        override fun onQueryTextChange(newText: String): Boolean {
+            fillerMenuItems(newText)
+            return true
+        }
+    })
+
+    }
+
+    private fun fillerMenuItems(query: String) {
+        fillerMenuFoodName.clear()
+        fillerMenuItemPrice.clear()
+        fillerMenuImage.clear()
+
+        originalMenuFoodName.forEachIndexed{index, foodName ->
+            if(foodName.contains(query, ignoreCase = true)){
+                fillerMenuFoodName.add(foodName)
+                fillerMenuItemPrice.add(originalMenuItemPrice[index])
+                fillerMenuImage.add(originalMenuImage[index])
+            }
+        }
+        adapter.notifyDataSetChanged()
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment SearchFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            SearchFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+
     }
 }

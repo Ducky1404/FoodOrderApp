@@ -2,7 +2,7 @@
 <resources>
     <color name="startColor">#53E88B</color>
     <color name="endColor">#15BE77</color>
-    <color name="iconColor">#4CAF50</color>
+    <color name="iconColor">#FEAD1D</color>
     <color name="textColor">#1FC57A</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>

@@ -24,7 +24,8 @@ class CartAdapter (
 
     override fun getItemCount(): Int = cartItems.size
 
-    inner class CartViewHolder(private val binding: CartItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class CartViewHolder(private val binding: CartItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(position: Int) {
             binding.apply {
                 val quantity = itemQuantities[position]
@@ -32,7 +33,40 @@ class CartAdapter (
                 cartItemPrice.text = CartItemPrice[position]
                 cartImage.setImageResource(CartImage[position])
                 cartItemQuantity.text = quantity.toString()
+
+                minusButton.setOnClickListener {
+                    deceaseQuantity(position)
+                }
+                plusButton.setOnClickListener {
+                    increaseQuantity(position)
+                }
+                deleteButton.setOnClickListener {
+                val itemPosition = adapterPosition
+                    if (itemPosition != RecyclerView.NO_POSITION) {
+                        deleteItem(itemPosition)
+                    }
+                }
             }
+
+        }
+        private fun deceaseQuantity(position: Int) {
+            if (itemQuantities[position] > 1) {
+                itemQuantities[position]--
+                binding.cartItemQuantity.text = itemQuantities[position].toString()
+            }
+        }
+        private fun increaseQuantity(position: Int) {
+            if (itemQuantities[position] < 10) {
+                itemQuantities[position]++
+                binding.cartItemQuantity.text = itemQuantities[position].toString()
+            }
+        }
+        private fun deleteItem(position: Int) {
+            cartItems.removeAt(position)
+            CartItemPrice.removeAt(position)
+            CartImage.removeAt(position)
+            notifyItemRemoved(position)
+            notifyItemRangeChanged(position, cartItems.size)
         }
     }
 }
